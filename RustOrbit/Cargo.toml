@@ -1,0 +1,4 @@
+[package]
+name = "RustOrbit"
+version = "0.1.0"
+authors = ["Andrew.Windows <andrew.h.gibbons@gmail.com>"]
