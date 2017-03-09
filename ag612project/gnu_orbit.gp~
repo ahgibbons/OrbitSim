@@ -1,0 +1,20 @@
+### set up the plot for this movie
+t0=150;
+t=t0;   ## start at line zero
+dt=2; ## step through lines by this much
+T=999; ## go until this line reached
+## Plot each object, and the trail of where it has been.
+set key off;
+set size ratio -1;
+set xrange [-15:15];
+set yrange [-15:15];
+set terminal png;
+set title sprintf("%d", t);
+set out sprintf("%04d.png",(t-t0)/dt);
+plot for [i=2:601:5] "tmass.txt" every 1::t::t u i:i+1 w p pt 7 lt -1, \
+"cmass.txt" every 1::t::t u 2:3 w p pt 2 lt 1,\
+"cmass.txt" every 1::t::t u 7:8 w p pt 2 lt 1; 
+## (I negate the coordinate in column 3 to make the picture
+##  agree with the diagram in the lecture notes)
+
+load "gnu_time.dat"

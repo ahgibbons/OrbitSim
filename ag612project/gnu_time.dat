@@ -1,0 +1,10 @@
+set terminal png
+set size ratio -1
+set xrange [-15:15]
+set yrange [-15:15]
+pause 0.01;
+t=t+dt;
+set title sprintf("%d", t);
+set out sprintf("%03d.png",(t-t0)/dt);
+replot;
+if (t+dt<=T) load 'gnu_time.dat';

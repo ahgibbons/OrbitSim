@@ -1,0 +1,18 @@
+Included in this folder are the required files for this project, including source code, makefile, and a copy of the PDF report.
+
+To compile the program, simply run the makefile. It will produce an executable "main.out".
+
+The main.out program takes the following commandline arguments:
+
+./main.out [final time] [time step] [output step] [galaxy frame]
+
+[final time](integer) specifies the time at which the simulation finishes (starting at time=0)
+[time step](integer) specifies the time increment per step in the integration
+[output step](integer) specifies the proportion of lines to send to output (eg, 10 will make the program output once in every 10 time steps
+[galaxy frame] (0 or 1)
+	If 0: The frame of reference is an intertial frame of reference.
+	If 1: The frame of reference is that of one of the galaxies
+
+As output, main.out produces two files, cmass.txt and tmass.txt. Containing the time,position, energy, and velocity information for the central galactic masses and test masses respectively. The files ending with .gp and .dat are scripts to produce images from the output data.
+
+
