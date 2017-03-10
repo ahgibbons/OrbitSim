@@ -114,7 +114,7 @@ if __name__ == "__main__":
     print("Simulation Complete")
 
     df = pd.DataFrame(res,columns=['x','y','t'])
-    df.to_csv("orbit_out.csv",sep=',')
+    df.to_csv("orbit_out.csv",sep=' ')
     print("Data saved to orbit_out.csv")
     
 
