@@ -13,15 +13,14 @@ import pandas as pd
 G = 1
 
 class TestMass:
-    def __init__(self,x,y,vx,vy,dt):
-        self.x0 = x
-        self.y0 = y
-        self.vx = vx
-        self.vy = vy
-        self.m = 1
+    def __init__(self,x,y,vx,vy,dt,m):
+        self.m = m        
+        self.r0 = np.array([x,y])
+        self.v = np.array([vx,vy])
+        self.dt = dt
 
-        self.x = x + vx*dt
-        self.y = y + vy*dt
+        self.r = self.r0 + self.v*dt 
+
 
         self.otherMasses = []
 
@@ -29,50 +28,73 @@ class TestMass:
         self.otherMasses = masses
         
     def stepStart(self):
-        x = self.x
-        y = self.y
-        vx = self.vx
-        vy = self.vy
+
+        f = sum([self.grav(m) for m in self.otherMasses])
+
+        a = f/self.m
         
-        fx = sum([self.grav(m) for m in self.otherMasses])
-        fy = sum([self.grav(m) for m in self.otherMasses])
-
-        ax = fx/self.m
-        ay = fy/self.m
-
-        self.vxn = vx + ax*dt
-        self.vyn = vy + ay*dt
-
-        self.xn = x + 0.5*(self.vxn+self.vx)*dt
-        self.yn = y + 0.5*(self.vxn+self.vx)*dt
-
-    def stepEnd(self):
-        self.x0 = self.x
-        self.y0 = self.x
-        self.x = self.xn
-        self.y = self.yn
-        self.vx = self.vxn
-        self.vy = self.vyn
+        self.verletStep(a)
+                          
+    def verletStep(self,a):
+        r  = self.r
+        r0 = self.r0
+        dt = self.dt
         
-class Mass:
-    def __init__(self,x,y,vx,vy,dt,m):
-        self.x0 = x
-        self.y0 = y
-        self.vx = vx
-        self.vy = vy
-        self.m = m
+        rn = 2*r - r0 + (dt*dt*a)
+        vn = (rn - r0) / (2*dt)  
 
-        self.x = x + vx*dt
-        self.y = y + vy*dt
-
-        self.otherMasses = []
-
+        self.rn = rn            
+        self.vn = vn
     
 
+    def stepEnd(self):
+        self.r0 = self.r
+        self.r  = self.rn
+        self.v  = self.vn
         
+        
+    def grav(self,omass):
+        m1 = self.m
+        r1 = self.r
+        
+        m2 = omass.m
+        r2 = omass.r
+        
+        A = G*m1*m2
+        dr = r2-r1
+        r_32 = np.power(np.dot(dr,dr),3/2)
+               
+        f = A*dr/r_32
+               
+        return f
+                
 
 def main():
-    cmass = Mass(0,0,0,0,1)
-    tmass = TestMass(0,5,2,0)
-
-    tmasses = [tmass]
+    finalTime = 10
+    totalSteps = 100
+    dt = finalTime / totalSteps
+    
+    m1 = TestMass(4,0,0,2,dt,1)
+    m0 = TestMass(0,0,0,0,dt,1)
+    
+    m1.set_otherMasses([m0])
+    
+    allMasses = [m0,m1]
+    
+    xs = np.array([0]*totalSteps)
+    ys = np.array([0]*totalSteps)
+    
+    t = 0
+    while t<finalTime:
+        for m in allMasses:
+            m.stepStart()
+        for m in allMasses:
+            m.stepEnd()
+        xs.append(m1.r[0])
+        ys.append(m1.r[1])
+        t += dt
+        
+    ts = np.linspace(0,finalTime,totalSteps)
+    
+    return(xs,ys,ts)
+    
