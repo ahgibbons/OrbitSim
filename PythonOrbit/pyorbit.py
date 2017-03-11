@@ -73,7 +73,7 @@ class TestMass:
 def main(finalTime,totalSteps):
     dt = float(finalTime) / totalSteps
     
-    m1 = TestMass(3,0,0,0.5,dt,1)
+    m1 = TestMass(10,0,0,0.316,dt,1)
     m0 = TestMass(0,0,0,0,dt,1)
     
     m1.set_otherMasses([m0])
@@ -94,7 +94,7 @@ def main(finalTime,totalSteps):
         
     ts = np.linspace(0,finalTime,totalSteps)
     
-    return np.array([xs,ys,ts]).T
+    return np.array([xs,ys,ts])
     
 if __name__ == "__main__":
     """
@@ -103,18 +103,27 @@ if __name__ == "__main__":
     
     argv = sys.argv
 
-    if len(argv)!=3:
+    if len(argv)==1:
+        print("args: [Final Time] [Total Steps]")
+    
+
+    elif len(argv)!=3:
         raise Exception("Incorrect number of arguments!")
-
+    else:
     
-    final_time = float(argv[1])
-    total_steps = int(argv[2])
+        final_time = float(argv[1])
+        total_steps = int(argv[2])
 
-    res = main(final_time,total_steps)
-    print("Simulation Complete")
+        res = main(final_time,total_steps).T
+        print("Simulation Complete")
 
-    df = pd.DataFrame(res,columns=['x','y','t'])
-    df.to_csv("orbit_out.csv",sep=' ')
-    print("Data saved to orbit_out.csv")
+        df = pd.DataFrame(res,columns=['x','y','t'])
+        df.to_csv("orbit_out.csv",sep=' ')
+        print("Data saved to orbit_out.csv")
     
 
+def perpV(G,M,r):
+    return np.sqrt(float(G*M)/r)
+
+def period(a,G,M):
+    return 2*np.pi*np.sqrt(float(a*a*a)/(G*M))

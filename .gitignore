@@ -1,5 +1,8 @@
+.DS_Store
 *.exe
 */bin/
 *.o
-
+HaskellOrbit/.stack-work/
+HaskellOrbit/.stack-work/*
+PythonOrbit/__pycache__/
 *~
