@@ -10,7 +10,14 @@ import pandas as pd
 def plotOrbit(infile,outfile):
 	df = pd.read_csv(infile,sep=' ',header=0)
 	
-	df.plot(x=0,y=0)
+	xs = df['x'].get_values()
+	ys = df['y'].get_values()	
+
+	fig = plt.figure()
+	ax = fig.add_subplot(111)
+
+	ax.plot(xs,ys)
+
 	plt.savefig(outfile)
 
 	print("Image made!")
