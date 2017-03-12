@@ -32,5 +32,7 @@ gravForce g' m1 m2 (Pos x2 y2) (Pos x1 y1) = Acc (f*dx) (f*dy)
     dx = x2-x1
     dy = y2-y1
 
+orbitStep g' m1 m2 
+
 runOrbit :: Double -> Mass -> Mass -> Pos -> Pos -> [Pos]
 runOrbit g' m1 m2 p1 p2 = iterate (
