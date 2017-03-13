@@ -45,7 +45,9 @@ fn main() {
     let ys: Vec<f64> = vec![0.0;total_steps as usize];
     let ts: Vec<f64> = vec![0.0;total_steps as usize];
     
-    let (fx,fy) = grav(m1,m2);
+    for i in 0..total_steps {
+        println!("i is {}", i);
+        }
     
     println!("dt is: {}", dt);
     println!("(fx,fy) is: ({}, {})", fx, fy);
