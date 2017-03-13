@@ -5,4 +5,6 @@
 HaskellOrbit/.stack-work/
 HaskellOrbit/.stack-work/*
 PythonOrbit/__pycache__/
+rust_orbit/target
+rust_orbit/target/*
 *~
