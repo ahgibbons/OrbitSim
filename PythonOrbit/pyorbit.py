@@ -21,7 +21,8 @@ class TestMass:
         self.dt = dt
 
         self.r = self.r0 + self.v*dt 
-
+        self.xpath = np.array([])
+        self.ypath = np.array([])
 
         self.otherMasses = []
 
@@ -68,29 +69,32 @@ class TestMass:
         f = A*dr/r_32
                
         return f
-                
 
-def main(finalTime,totalSteps):
+test_mass1 = TestMass(10,0,0,0.316,dt,1)
+test_mass2 = TestMass(0,0,0,-0.316,dt,1)                
+
+test_mass1.set_othermasses([test_mass2])
+test_mass2.set_othermasses([test_mass1])
+
+allMasses = [test_mass1,test_mass2]
+
+def main(finalTime,totalSteps,masses):
     dt = float(finalTime) / totalSteps
     
-    m1 = TestMass(10,0,0,0.316,dt,1)
-    m0 = TestMass(0,0,0,0,dt,1)
-    
-    m1.set_otherMasses([m0])
-    
-    allMasses = [m0,m1]
-    
-    xs = np.array([0.0]*totalSteps)
-    ys = np.array([0.0]*totalSteps)
-    
+    for m in masses:
+        m.xpath = np.array([0.0]*totalSteps)
+        m.ypath = np.array([0.0]*totalSteps)
+
+
     
     for n in np.arange(totalSteps):
         for m in allMasses:
             m.stepStart()
         for m in allMasses:
             m.stepEnd()
-        xs[n] = m1.r[0]
-        ys[n] = m1.r[1]
+            m.xpath[n] = m.r[0]
+            m.ypath[n] = m.r[1]
+
         
     ts = np.linspace(0,finalTime,totalSteps)
     
