@@ -14,33 +14,34 @@ import sys
 G = 1
 
 class TestMass:
-    def __init__(self,x,y,vx,vy,dt,m):
+    def __init__(self,x,y,vx,vy,m):
         self.m = m        
         self.r0 = np.array([x,y])
         self.v = np.array([vx,vy])
-        self.dt = dt
 
-        self.r = self.r0 + self.v*dt 
+        self.r = self.r0 
         self.xpath = np.array([])
         self.ypath = np.array([])
 
         self.otherMasses = []
 
+    def initMotion(self,dt):
+        self.r = self.r0 + self.v*dt
+
     def set_otherMasses(self,masses):
         self.otherMasses = masses
         
-    def stepStart(self):
+    def stepStart(self,dt):
 
         f = sum([self.grav(m) for m in self.otherMasses])
 
         a = f/self.m
         
-        self.verletStep(a)
+        self.verletStep(a,dt)
                           
-    def verletStep(self,a):
+    def verletStep(self,a,dt):
         r  = self.r
         r0 = self.r0
-        dt = self.dt
         
         rn = 2*r - r0 + (dt*dt*a)
         vn = (rn - r0) / (2*dt)  
@@ -70,11 +71,11 @@ class TestMass:
                
         return f
 
-test_mass1 = TestMass(10,0,0,0.316,dt,1)
-test_mass2 = TestMass(0,0,0,-0.316,dt,1)                
+test_mass1 = TestMass(10,0,0,0.1,1)
+test_mass2 = TestMass(0,0,0,-0.1,1)                
 
-test_mass1.set_othermasses([test_mass2])
-test_mass2.set_othermasses([test_mass1])
+test_mass1.set_otherMasses([test_mass2])
+test_mass2.set_otherMasses([test_mass1])
 
 allMasses = [test_mass1,test_mass2]
 
@@ -82,23 +83,29 @@ def main(finalTime,totalSteps,masses):
     dt = float(finalTime) / totalSteps
     
     for m in masses:
+        m.initMotion(dt)
         m.xpath = np.array([0.0]*totalSteps)
         m.ypath = np.array([0.0]*totalSteps)
 
 
     
     for n in np.arange(totalSteps):
-        for m in allMasses:
-            m.stepStart()
-        for m in allMasses:
+        for m in masses:
+            m.stepStart(dt)
+        for m in masses:
             m.stepEnd()
             m.xpath[n] = m.r[0]
             m.ypath[n] = m.r[1]
 
         
     ts = np.linspace(0,finalTime,totalSteps)
-    
-    return np.array([xs,ys,ts])
+    res = ts
+
+    for m in masses:
+        res = np.vstack([res,m.xpath,m.ypath])
+
+    return res
+
     
 if __name__ == "__main__":
     """
@@ -118,10 +125,17 @@ if __name__ == "__main__":
         final_time = float(argv[1])
         total_steps = int(argv[2])
 
-        res = main(final_time,total_steps).T
+        res = main(final_time,total_steps,allMasses).T
         print("Simulation Complete")
 
-        df = pd.DataFrame(res,columns=['x','y','t'])
+        colnames = ['t']
+        for n,m in enumerate(allMasses):
+            colnames.append('x{:d}'.format(n))
+            colnames.append('y{:d}'.format(n))
+
+
+
+        df = pd.DataFrame(res,columns=colnames)
         df.to_csv("orbit_out.csv",sep=' ')
         print("Data saved to orbit_out.csv")
     
