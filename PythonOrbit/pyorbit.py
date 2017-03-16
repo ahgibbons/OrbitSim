@@ -71,13 +71,19 @@ class TestMass:
                
         return f
 
-test_mass1 = TestMass(10,0,0,0.1,1)
-test_mass2 = TestMass(0,0,0,-0.1,1)                
+def perpV(G,M,r):
+    return np.sqrt(float(G*M)/r)
 
-test_mass1.set_otherMasses([test_mass2])
-test_mass2.set_otherMasses([test_mass1])
+def period(a,G,M):
+    return 2*np.pi*np.sqrt(float(a*a*a)/(G*M))
 
-allMasses = [test_mass1,test_mass2]
+
+bigMass = TestMass(0,0,0,0,1)
+littleMasses = [TestMass(r,0,0,perpV(1,1,r),1) for r in range(5,10)]
+for m in littleMasses:
+    m.set_otherMasses([bigMass])
+
+allMasses = [bigMass] + littleMasses
 
 def main(finalTime,totalSteps,masses):
     dt = float(finalTime) / totalSteps
@@ -128,6 +134,7 @@ if __name__ == "__main__":
 
         res = main(final_time,total_steps,allMasses).T
         print("Simulation Complete")
+        print("Number of masses: {:d}".format(len(allMasses)))
 
         colnames = ['t']
         for n,m in enumerate(allMasses):
@@ -141,8 +148,3 @@ if __name__ == "__main__":
         print("Data saved to {:s}".format(outfile))
     
 
-def perpV(G,M,r):
-    return np.sqrt(float(G*M)/r)
-
-def period(a,G,M):
-    return 2*np.pi*np.sqrt(float(a*a*a)/(G*M))

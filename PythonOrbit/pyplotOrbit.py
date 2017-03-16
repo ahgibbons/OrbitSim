@@ -7,20 +7,19 @@ import sys
 import matplotlib.pyplot as plt
 import pandas as pd
 
-def plotOrbit(infile,outfile):
+def plotOrbit(infile,outfile,nplots):
         df = pd.read_csv(infile,sep=' ',header=0)
-	
-        xs0 = df['x0'].get_values()
-        ys0 = df['y0'].get_values()	
 
-        xs1 = df['x1'].get_values()
-        ys1 = df['y1'].get_values()
 
         fig = plt.figure()
         ax = fig.add_subplot(111)
 
-        ax.plot(xs0,ys0)
-        ax.plot(xs1,ys1)
+        for n in range(nplots):
+                xkey = 'x'+str(n)
+                ykey = 'y'+str(n)
+                xs = df[xkey].get_values()
+                ys = df[ykey].get_values()
+                ax.plot(xs,ys)
 
         plt.savefig(outfile)
 
@@ -29,12 +28,13 @@ def plotOrbit(infile,outfile):
         return 1
 
 def main(argv):
-	infile = argv[1]
-	outfile = argv[2]
+        infile = argv[1]
+        outfile = argv[2]
+        nplot = int(argv[3])
 
-	plotOrbit(infile,outfile)
+        plotOrbit(infile,outfile,nplot)
 
 if __name__=="__main__":
-	argv = sys.argv
-	main(argv)
+        argv = sys.argv
+        main(argv)
 
