@@ -1,5 +1,6 @@
 .DS_Store
 *.exe
+*.png
 */bin/
 *.o
 HaskellOrbit/.stack-work/

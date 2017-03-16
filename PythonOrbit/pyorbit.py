@@ -118,12 +118,13 @@ if __name__ == "__main__":
         print("args: [Final Time] [Total Steps]")
     
 
-    elif len(argv)!=3:
+    elif len(argv)!=4:
         raise Exception("Incorrect number of arguments!")
     else:
     
         final_time = float(argv[1])
         total_steps = int(argv[2])
+        outfile = argv[3]
 
         res = main(final_time,total_steps,allMasses).T
         print("Simulation Complete")
@@ -136,8 +137,8 @@ if __name__ == "__main__":
 
 
         df = pd.DataFrame(res,columns=colnames)
-        df.to_csv("orbit_out.csv",sep=' ')
-        print("Data saved to orbit_out.csv")
+        df.to_csv(outfile,sep=' ')
+        print("Data saved to {:s}".format(outfile))
     
 
 def perpV(G,M,r):
