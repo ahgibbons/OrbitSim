@@ -144,7 +144,7 @@ if __name__ == "__main__":
 
 
         df = pd.DataFrame(res,columns=colnames)
-        df.to_csv(outfile,sep=' ')
+        df.to_csv(outfile,sep=' ',index=False)
         print("Data saved to {:s}".format(outfile))
     
 
