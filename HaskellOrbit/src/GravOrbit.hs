@@ -1,7 +1,8 @@
 module GravOrbit where
 
 import System.Environment (getArgs)
-
+import Data.List (foldl')
+    
 gConst :: Double
 gConst = 1
 
@@ -16,7 +17,7 @@ fadd :: Force -> Force -> Force
 fadd (Force fx1 fy1) (Force fx2 fy2) = Force (fx1+fx2) (fy1+fy2)
              
 mass0 = DynMass {mmass=1, mpos=Pos 0 0, mprevpos=Pos 0 0, mID=0}
-mass1 = DynMass {mmass=1, mpos=Pos 9 0, mprevpos=Pos 8.9 0, mID=1}
+mass1 = DynMass {mmass=1, mpos=Pos 9 0, mprevpos=Pos 0 (-0.333), mID=1}
 
 massEq :: DynMass -> DynMass -> Bool
 massEq m1 m2 = mID m1 == mID m2
@@ -29,12 +30,23 @@ f2m (Force fx fy) m' = Acc (fx/m') (fy/m')
 
 genForces :: DynMass -> [DynMass] -> [Force]
 genForces mass masses = map (mGrav gConst mass) (filter (not . massEq mass) masses)
-            
+
+totalForce :: [DynMass] -> DynMass -> Force
+totalForce masses mass = foldl' fadd (Force 0 0) . genForces mass $ masses
+
+applyForce :: Double -> DynMass -> Force -> DynMass
+applyForce dt mass f = mass {mpos=pos', mprevpos=pos}
+  where
+    pos     = mpos mass
+    prevpos = mprevpos mass
+    acc     = f2m f (mmass mass)
+    pos' = verletStep dt acc (prevpos,pos)
+
+           
 mGrav :: Double -> DynMass -> DynMass -> Force
 mGrav g' m1 m2 = gravForce g' (mmass m1) (mmass m2) (mpos m1) (mpos m2)
 
-gravStep :: [DynMass] -> 
-                 
+               
 perpV :: Double -> Mass -> Double -> Double
 perpV g' m' r = sqrt(g'*m'/r)
 
@@ -42,8 +54,8 @@ period :: Double -> Mass -> Double -> Double
 period g' m' r = 2*pi*sqrt(r*r*r / (g'*m'))
 
 
-verletStep :: Double -> Acc -> (Pos,Pos) -> (Pos,Pos)
-verletStep dt (Acc ax ay) (Pos x0 y0, Pos x1 y1) = (Pos x1 y1, Pos x' y')
+verletStep :: Double -> Acc -> (Pos,Pos) -> Pos
+verletStep dt (Acc ax ay) (Pos x0 y0, Pos x1 y1) = Pos x' y'
   where x' = verletStep1D ax x1 x0 
         y' = verletStep1D ay y1 y0
         verletStep1D a r0 r1 = 2*r1 - r0 + (dt*dt*a)
